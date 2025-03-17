@@ -74,29 +74,39 @@ export class WalletService {
         })
 
         return data
-        
     })
 
-    // public async fund(details: IFundWallet){
-    //     const { amount } = details
+    fundWallet = serviceWrapper(async(fundDetails: IFundWallet)=>{
+        const {email, amount, reference} = fundDetails;
+
+        const completed = await db.transaction(async (trx)=>{
+
+            const user = await trx("users").select("id").where("email", email).first()
         
-    // }
+            if(!user) throw new NotFound("user not found")
 
-    // public async withdraw(){
+            await trx("wallets").where("user_id", user?.id).update({
+                "account_balance": trx.raw("account_balance + ?", [amount]),
+                "balance_last_updated": trx.fn.now()
+            })
 
-    // }
+            await trx("transactions").insert({
+                sender: null,
+                receiver: null,
+                amount: amount,
+                type: "deposit",    
+                reference: reference,
+                description: null
+            })
 
-    // public async transfer(details: ITransferWallet){
 
-    //     const {senderWalletId, receiverWalletId, } = details
+            return user?.id
+        })
+        return completed
+    })
 
-    //    try{
-    //     const _ = await transferFunds()
-    //    }catch(err){
 
-    //    }
-
-    // }
+   
 }
 
 const walletService = new WalletService()
