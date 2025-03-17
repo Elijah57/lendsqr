@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 export class HttpError extends Error {
     public statusCode: number;
 
-    constructor(message: string, statusCode){
+    constructor(message: string, statusCode: number){
         super(message)
         this.statusCode = statusCode
         this.name = this.constructor.name
@@ -59,7 +59,7 @@ export class ServerError extends HttpError{
     }
 }
 
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction)=>{
+export const RouteNotFoundHandler = (req: Request, res: Response, next: NextFunction)=>{
     const message = `Route not found: ${req.originalUrl}`
     res.status(404).json({message})
 }
