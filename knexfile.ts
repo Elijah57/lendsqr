@@ -5,13 +5,14 @@ dotenv.config()
 
 const config: Knex.Config = {
     
-    client: "postgresql",
+    client: "mysql2",
     connection: {
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT) || 5432,
-        user: process.env.PROD_DB_USER || "root",
-        password: process.env.PROD_DB_PWD,
-        database: process.env.PROD_DB_NAME,
+        user: process.env.DB_USER || "root",
+        password: process.env.DB_PWD,
+        database: process.env.DB_NAME,
+        ssl: { rejectUnauthorized: false }
     },
     pool: {
         min: 5,
