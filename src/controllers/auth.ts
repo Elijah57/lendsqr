@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authService";
-import asyncReqWrapper from "../utils/asyncWrapper";
+import {asyncReqWrapper} from "../utils";
 import { BadRequest } from "../middlewares/error";
 import { ISignup, Ilogin } from "../types";
 import adjutorAPI from "../api/adjutor";
@@ -14,6 +14,8 @@ export const signup = asyncReqWrapper(async (req: Request, res: Response, next: 
         return next(new BadRequest("All fields are required"))
     }
 
+    // TODO: calls to Karma API returns 500 - Internal server Error
+    // Hence, i could not complete this logic, screenshot of this error can be found in the ReadMeTrouble
     // const isKarma = await adjutorAPI.verifyKarma(email)
     // console.log(isKarma)
 
