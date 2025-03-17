@@ -5,6 +5,10 @@ export async function findUserByEmail(email:string) {
 	return await db("users").select(["id", "email", "passwordhash"]).where("email",email).first()
 }
 
+export async function findUserById(userId:string) {
+	return await db("users").select(["id", "email", "firstname", "lastname"]).where("id",userId).first()
+}
+
 export async function getUserWallet(userId: string){
 	return await db("wallets").select("*").where("user_id", userId).first()
 }
