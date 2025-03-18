@@ -1,4 +1,4 @@
-import {IcreateWallet, IFundWallet, ITransferDetails } from "../types"
+import {IcreateWallet, IFundWallet, ITransferDetails, IWithdrawWallet } from "../types"
 import {serviceWrapper, generateTransactionReference, generateUniqueAccountNumber} from "../utils";
 import { NextFunction } from "express";
 import db from "../db";
@@ -90,9 +90,14 @@ export class WalletService {
                 "balance_last_updated": trx.fn.now()
             })
 
+            const userWallet = await trx("wallets").select("*").where("user_id", user?.id).first()
+
             await trx("transactions").insert({
                 sender: null,
-                receiver: null,
+                receiver: JSON.stringify({
+                    account_name: userWallet?.account_name, 
+                    account_number: userWallet?.account_number
+                }),
                 amount: amount,
                 type: "deposit",    
                 reference: reference,
@@ -101,6 +106,49 @@ export class WalletService {
 
 
             return user?.id
+        })
+        return completed
+    })
+
+
+    withdrawal = serviceWrapper(async(withdrawalDetails: IWithdrawWallet)=>{
+        const {userId, amount, receiver, description} = withdrawalDetails;
+
+        const completed = await db.transaction(async (trx)=>{
+
+            const wallet = await trx("wallets").select("*").where("user_id", userId).first()
+        
+            if(!wallet) throw new NotFound("wallet not found")
+
+            if(wallet?.account_balance < amount){
+                throw new BadRequest("Insufficient balance, Top up your account")
+            }
+
+            await trx("wallets").where("id", wallet?.id).update({
+                "account_balance": trx.raw("account_balance - ?", [amount]),
+                "balance_last_updated": trx.fn.now()
+            })
+
+            // const userWallet = await trx("wallets").select("*").where("user_id", userId).first()
+            const reference = `TXN-${generateTransactionReference()}`
+            await trx("transactions").insert({
+        
+                sender: JSON.stringify({
+                    account_name: wallet?.account_name, 
+                    account_number: wallet?.account_number
+                }),
+                receiver: JSON.stringify({
+                    account_name: receiver?.account_name, 
+                    account_number: receiver?.account_number
+                }),
+                amount: amount,
+                type: "withdrawal",    
+                reference: reference,
+                description: description
+            })
+            const transaction = await trx("transactions").select(["sender", "receiver", "amount", "reference", "description"]).where("reference", reference).first()
+            const walletUpdate = await trx("wallets").select("account_balance").where("user_id", userId).first()
+            return {transaction, balance: walletUpdate?.account_balance};
         })
         return completed
     })
