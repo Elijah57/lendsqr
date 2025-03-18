@@ -1,7 +1,8 @@
 
 declare module "express-serve-static-core" {
     interface Request {
-      user?: any
+      user?: any,
+      
     }
   }
 
@@ -14,11 +15,18 @@ export interface IcreateWallet {
 
 export interface IFundWallet {
     amount: number,
-    userId: string,
+    email: string,
+    reference?: string
 }
 
 export interface IWithdrawWallet {
     amount: number,
+    userId: string
+    receiver: {
+        account_name: string,
+        account_number: string
+    },
+    description?: string
     
 }
 
@@ -101,7 +109,6 @@ export interface initializePaymentRawResponse {
         reference: string
     }
 }
-// export interface verifyPayment
 
 export interface verifyPaymentReferenceResponse {
     status: boolean,
@@ -118,6 +125,73 @@ export interface verifyPaymentReferenceResponse {
     },
 }
 
+
+export interface ITransferReceipt{
+    type: string,
+    name: string,
+    account_number: string,
+    bank_code: string,
+    currency: string
+
+}
+
+export interface ITransferReceiptResponse {
+
+    status: boolean,
+    message: string,
+    data: {
+        active?: boolean,
+        createdAt?: string,
+        currency?: string,
+        domain?: string,
+        id?: string,
+        integration?: string,
+        name: string,
+        receipt_code: string,
+        type: string,
+        updatedAt: string,
+        is_deleted: boolean,
+        details: {
+            authorization_code: any,
+            account_number: string,
+            account_name: string,
+            bank_code: string,
+            bank_name: string
+        }
+    },
+}
+export interface IBankResolveResponse {
+    status: boolean,
+    message: string,
+    data: {
+        account_number: string,
+        account_name: string
+    },
+    bank_code: string
+}
+
+export interface IBankresolve {
+    account_number: string,
+    bank_code: string
+}
+
+export interface IBankCodeResponse{
+    status: string,
+    message: string,
+    data: [{
+        name: string,
+        code: string,
+        slug: string,
+        longcode: string,
+        country: string,
+        currency: string
+    }]
+}
+
+export interface IAccountDetails{
+    bank_name: string,
+    account_number: string
+}
 
 // Adjutor
 export interface IKarmaResponse {
