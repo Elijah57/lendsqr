@@ -1,0 +1,69 @@
+name: Deployment Pipeline
+
+on: 
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Setup SSH
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                ssh-private-key: ${{ secrets.SSH_DEPLOY_KEY }}
+
+            - name: Deploy to Server
+              run: |
+                ssh -o StrictHostKeyChecking=no devm@${{ secrets.SERVER_IP }} << 'EOF'
+
+                # Ensure required packages are installed
+                #apt-get update
+                #apt-get install -y git docker.io nginx
+                
+                #Ensure app is cloned
+                if [ ! -d "/lendsqr" ]; then
+                    git clone https://github.com/Elijah57/lendsqr.git
+                fi
+                
+                cd lendsqr/
+                git pull origin main
+
+                # Build and run project in a container
+                sudo docker rm -f lendsqr || true
+
+                sudo docker compose up --build -d
+                
+                
+                # Set up Nginx configuration
+                # echo "🔧 Setting up Nginx configuration..."
+                # sudo tee /etc/nginx/sites-available/fastapi.conf > /dev/null <<EOF
+                # server {
+                #     listen 80;
+                #     server_name ${{ secrets.SERVER_IP }};
+
+                #     location / {
+                #         proxy_pass http://127.0.0.1:8000;
+                #         proxy_set_header Host \$host;
+                #         proxy_set_header X-Real-IP \$remote_addr;
+                #         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                #         proxy_set_header X-Forwarded-Proto \$scheme;
+                #     }
+                # }
+                # EOF
+
+
+                # sudo ln -sf /etc/nginx/sites-available/fastapi.conf /etc/nginx/sites-enabled/
+                sudo systemctl restart nginx
+
+                echo "✅ Deployment Successful!"
+                EOF
+
+        
+          
