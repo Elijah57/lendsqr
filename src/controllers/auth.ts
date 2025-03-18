@@ -23,6 +23,7 @@ export const signup = asyncReqWrapper(async (req: Request, res: Response, next: 
     const userDetails = await authService.signup(userPayload)
     res.status(200).json({
         status: true,
+        message: "User registered successfully",
         userDetails
     })
 })
