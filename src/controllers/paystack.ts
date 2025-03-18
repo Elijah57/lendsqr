@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import paystackApi from "../api/paystackApi";
 import {asyncReqWrapper} from "../utils";
-import db from "../db";
 import { BadRequest } from "../middlewares/error";
 import { IAccountDetails, IBankresolve, ITransferReceipt, ITransferReceiptResponse } from "../types";
 import { fetchBankCode } from "../db/repositories";
