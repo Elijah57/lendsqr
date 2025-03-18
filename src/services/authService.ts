@@ -7,7 +7,7 @@ import { findUserByEmail } from "../db/repositories";
 
 
 
-class AuthService {
+export class AuthService {
 
     private readonly walletService;
 
@@ -44,7 +44,7 @@ class AuthService {
             const wallet = await this.walletService.createWallet(trx, userDetails)
             return {user: user, walletId: wallet}
         })
-        console.log(data)
+        // console.log(data)
         return data
        
 
