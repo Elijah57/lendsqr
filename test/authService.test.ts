@@ -8,7 +8,6 @@ jest.mock("jsonwebtoken");
 
 describe("AuthService", () => {
   let authService: AuthService;
-//   let walletService: WalletService = new WalletService();
 
   beforeEach(() => {
 
