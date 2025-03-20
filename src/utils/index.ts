@@ -1,8 +1,9 @@
 import { randomInt } from "crypto";
 import * as argon2 from "argon2";
-import * as jwt from "jsonwebtoken";
+import jwt, { SignOptions} from "jsonwebtoken";
 import { IAuthPayload } from "../types";
 import {Knex} from "knex";
+import type { StringValue } from "ms";
 
 export async function hashPassword (password: string){
     return await argon2.hash(password)
@@ -14,13 +15,13 @@ export async function isPasswordMatched (hashedPassword: string, password: strin
 }
 
 export const generateAcessToken = (payload: IAuthPayload)=>{
-    const jwtExpiry: string | any = process.env.JWT_EXPIRY || "5m";
-    return jwt.sign(payload, process.env.JWT_SECRET!, {expiresIn: jwtExpiry })
+    const jwtExpiry = process.env.JWT_EXPIRY || "1d";
+    return jwt.sign(payload, process.env.JWT_SECRET!, {expiresIn: jwtExpiry as StringValue })
 }
 
 export const generateRefreshToken = (payload: IAuthPayload)=>{
-    const jwtRefreshExpiry: string | any = process.env.JWT_REFRESH_EXPIRY || "15m";
-    return jwt.sign( payload, process.env.JWT_REFRESH_SECRET!, {expiresIn: jwtRefreshExpiry})
+    const jwtRefreshExpiry = process.env.JWT_REFRESH_EXPIRY || "15m";
+    return jwt.sign( payload, process.env.JWT_REFRESH_SECRET!, {expiresIn: jwtRefreshExpiry as StringValue})
 }
 
 
@@ -47,14 +48,6 @@ export async function generateUniqueAccountNumber(db: Knex) {
   
     return accountNumber;
   }
-  
-// testing speeed, it generates  1 million transaction reference in 758.53ms
-// console.time("Transaction reference generation")
-// for (let i=0; i < 1000000; i++){
-//     generateTransactionReference()
-// }
-// console.timeEnd("Transaction reference generation")
-// console.log(generateTransactionReference())
 
 
 export * from "./asyncWrapper"
