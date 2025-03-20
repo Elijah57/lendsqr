@@ -21,7 +21,7 @@ jobs:
 
             - name: Deploy to Server
               run: |
-                ssh -o StrictHostKeyChecking=no -t devm@${{ secrets.SERVER_IP }} << 'EOF'
+                ssh -o StrictHostKeyChecking=no -tt devm@${{ secrets.SERVER_IP }} << 'EOF'
 
                 # Ensure required packages are installed
                 #apt-get update
