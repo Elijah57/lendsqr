@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import paystackApi from "../api/paystackApi";
-import {asyncReqWrapper} from "../utils";
+import {asyncReqWrapper, serviceWrapper} from "../utils";
 import { BadRequest } from "../middlewares/error";
 import { IAccountDetails, IBankresolve, ITransferReceipt, ITransferReceiptResponse } from "../types";
 import { fetchBankCode } from "../db/repositories";
@@ -27,51 +27,42 @@ export const initializePayment = asyncReqWrapper(async (req:Request, res: Respon
 
 });
 
-export const paystackVerifyPayment = async (reference: string)=>{
-    try{
+export const paystackVerifyPayment = serviceWrapper(async (reference: string)=>{
 
-        const response = await paystackApi.verifyPayment(reference);
+    const response = await paystackApi.verifyPayment(reference);
+
+    const data = {
+        metadata: response.data.metadata,
+        status: response.data.status,
+        reference: response.data.reference,
+        amount: response.data.amount
+    }
+
+    if(data.status !== "success"){
+        throw new BadRequest(`Transaction: ${data.status}`)
+    }
+    return data
+
+});
+
+
+export const paystackResolveBank = serviceWrapper(async(accountDetails: IAccountDetails)=>{
     
-        const data = {
-            metadata: response.data.metadata,
-            status: response.data.status,
-            reference: response.data.reference,
-            amount: response.data.amount
-        }
+    const bank = await fetchBankCode(accountDetails.bank_name)
+    if (!bank) throw new Error("Invalid bank");
+    const code = bank?.code
+    const resolve: IBankresolve = {account_number: accountDetails.account_number, bank_code: code}
     
-        if(data.status !== "success"){
-            throw new BadRequest(`Transaction: ${data.status}`)
-        }
-        return data
-    }catch(error){
-        throw error
-    }
-};
+    const response = await paystackApi.bankResolve(resolve)
+    response.bank_code = code
+    return response
 
+});
 
-export const paystackResolveBank = async(accountDetails: IAccountDetails)=>{
-    try{
-        
-        const bank = await fetchBankCode(accountDetails.bank_name)
-        if (!bank) throw new Error("Invalid bank");
-        const code = bank?.code
-        const resolve: IBankresolve = {account_number: accountDetails.account_number, bank_code: code}
-        
-        const response = await paystackApi.bankResolve(resolve)
-        response.bank_code = code
-        return response
-    }catch(err){
-        throw err
-    }
-}
+export const paystackTransferRecipient = serviceWrapper(async(transferReciptDetails: ITransferReceipt)=>{
 
-export const paystackTransferRecipient = async(transferReciptDetails: ITransferReceipt)=>{
-    try{
-        
-        const response:ITransferReceiptResponse = await paystackApi.createTransferReceipt(transferReciptDetails)
-       
-        return response
-    }catch(err){
-        throw err
-    }
-}
+    const response:ITransferReceiptResponse = await paystackApi.createTransferReceipt(transferReciptDetails)
+    
+    return response
+
+})
