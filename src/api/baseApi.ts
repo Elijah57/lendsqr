@@ -17,14 +17,10 @@ class BaseAPI {
             }
 
             const requestOptions = {...RequestInit, body}
-            // console.log("Request Options:", requestOptions);
             const response = await fetch(urlObj.toString(), requestOptions)
-            // console.log(response)
-
 
             if(!response.ok){
                 const errorResponse = await response.text()
-                // console.log(errorResponse)
                 throw new BadRequest(errorResponse)
             }
 
