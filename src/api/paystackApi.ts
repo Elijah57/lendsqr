@@ -11,7 +11,7 @@ class PaystackAPI extends BaseAPI{
         }
     }
     constructor(){
-        super(config.paystackUrl as string)
+        super(config.paystackUrl)
     }
 
     initializePayment = async (paymentDetails: initializePaymentDetails)=>{
