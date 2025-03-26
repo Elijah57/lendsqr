@@ -21,5 +21,13 @@ app.use(cors(configs.corsOptions))
 app.use("/api/v1/auth", authLimiter, authRouter)
 app.use("/api/v1/wallet", walletRouter)
 
+app.get("/heavy", (req, res)=>{
+    let total = 0;
+    for (let i = 0; i < 50_000_000; i++){
+        total++;
+    }
+    res.send(`The result of the computative task is ${total}\n`)
+})
+
 app.use(RouteNotFoundHandler)
 app.use(errorHandler)

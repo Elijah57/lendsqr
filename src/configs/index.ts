@@ -1,5 +1,5 @@
 const configs = {
-    appPort: 6000,
+    appPort: 5000,
     paystackUrl: "https://api.paystack.co",
     adjutorUrl: "https://adjutor.lendsqr.com/v2/",
     paystackCallbackUrl: "",
