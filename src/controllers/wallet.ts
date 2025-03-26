@@ -107,9 +107,7 @@ export const verifyFundPayment = asyncReqWrapper(async (req: Request, res: Respo
 export const bankResolve = asyncReqWrapper(async (req: Request, res: Response, next: NextFunction)=>{
     
     const {account_number, bank_name} = req.body as IAccountDetails
-    if(!account_number || !bank_name){
-        return next(new BadRequest('All fields are required'))
-    }
+
     const response:IBankResolveResponse = await paystackResolveBank({account_number, bank_name})
 
     if(!response){
@@ -131,13 +129,7 @@ export const bankResolve = asyncReqWrapper(async (req: Request, res: Response, n
 export const withdrawal = asyncReqWrapper(async (req: Request, res: Response, next: NextFunction)=>{
     
     const {account_number, bank_name, amount, description} = req.body
-    if(!amount || isNaN(amount)){
-        return next(new BadRequest("Invalid amount format"))
-    }
 
-    if(!account_number || !bank_name){
-        return next(new BadRequest("Bank name and account number are required"))
-    }
     const response:IBankResolveResponse= await paystackResolveBank({account_number, bank_name})
 
     if(!response){
