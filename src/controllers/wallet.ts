@@ -46,9 +46,7 @@ export const transferTo = asyncReqWrapper(async(req: Request, res: Response, nex
 export const preFundWallet = asyncReqWrapper(async(req: Request, res: Response, next: NextFunction)=>{
 
     const { amount } = req.body;
-    if(!amount || isNaN(amount)){
-        return next(new BadRequest("Invalid amount format (number), amount is required"))
-    }
+   
     const paymentAmount = (amount * 100).toString();
 
     const userId = req.user?.userId
@@ -87,7 +85,7 @@ export const verifyFundPayment = asyncReqWrapper(async (req: Request, res: Respo
 
     const fundDetails = {
         email: data.metadata.email,
-        amount: data.amount,
+        amount: data.amount / 100,
         reference: data.reference
     }
 
