@@ -13,7 +13,7 @@ export const fundSchema = z.object({
 
 
 export const bankResolveSchema = z.object({
-    account_number: z.string().max(10, "Account number cannot exceed 10 digits"),,
+    account_number: z.string().max(10, "Account number cannot exceed 10 digits"),
     bank_name: z.string()
 })
 

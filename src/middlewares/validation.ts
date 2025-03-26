@@ -10,7 +10,7 @@ export const validateInput = (schema: ZodTypeAny)=>{
         } catch(err){
             if(err instanceof ZodError){
                 const msg = err.errors.map((issue)=> ({
-                    message: `${issue.path.join("")} is ${issue.message}`
+                    message: `${issue.path.join("")}:  ${issue.message}`
                 }))
                 res.status(400).json({status: false, error: msg})
             }else{
