@@ -21,5 +21,7 @@ app.use(cors(configs.corsOptions))
 app.use("/api/v1/auth", authLimiter, authRouter)
 app.use("/api/v1/wallet", walletRouter)
 
+
+
 app.use(RouteNotFoundHandler)
 app.use(errorHandler)

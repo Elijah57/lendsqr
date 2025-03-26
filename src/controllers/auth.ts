@@ -10,10 +10,6 @@ import adjutorAPI from "../api/adjutor";
 export const signup = asyncReqWrapper(async (req: Request, res: Response, next: NextFunction)=>{
     const {firstname, lastname, email, phoneno, password} = req.body;
 
-    if(!firstname || !lastname || !email){
-        return next(new BadRequest("All fields are required"))
-    }
-
     // TODO: calls to Karma API returns 500 - Internal server Error
     // Hence, i could not complete this logic, screenshot of this error can be found in the ReadMeTrouble
     // const isKarma = await adjutorAPI.verifyKarma(email)
