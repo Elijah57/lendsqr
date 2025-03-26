@@ -9,7 +9,10 @@ export const validateInput = (schema: ZodTypeAny)=>{
             next();
         } catch(err){
             if(err instanceof ZodError){
-                res.status(400).json({status: false, error: err})
+                const msg = err.errors.map((issue)=> ({
+                    message: `${issue.path.join("")} is ${issue.message}`
+                }))
+                res.status(400).json({status: false, error: msg})
             }else{
                 throw new ServerError("Internal Server Error")
             }
